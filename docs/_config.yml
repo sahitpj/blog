@@ -4,8 +4,8 @@ author: Jayakrishna Sahit
 email: jayakrishna.sahit@iitgn.ac.in
 # You can edit this line in _config.yml. It will appear in your document head meta and in your feed.xml site description
 keywords: "Jekyll, theme, Freshman21"
-baseurl: "/home" # the subpath of your site, e.g. /blog/
-url: "/" # the base hostname & protocol for your site
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "sahitpj.github.io/blog/home" # the base hostname & protocol for your site
 locale: en_US
 
 ### Personal info and site tools info:
