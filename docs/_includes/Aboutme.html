@@ -1,0 +1,18 @@
+<div class="sidebar-module about">
+  {% if site.ShowContactInfo == "True" %}
+
+  You can contact me via: <br>
+
+  {% if site.email != empty %}
+  <a href="mailto:{{site.email}}" title="mailto: {{site.email}}">Email</a> <br>
+  {% endif %}
+  {% if site.github_username != empty %}
+  <a href="https://github.com/{{site.github_username}}" title="GithubID: {{site.github_username}}">Github</a><br>
+  {% endif %}
+  {% if site.twitter_username != empty %}
+  <a href="https://twitter.com/{{site.twitter_username}}" title="TwitterID: {{site.twitter_username}}">Twitter</a><br>
+  {% endif %}
+
+  {% endif %}
+
+</div>
