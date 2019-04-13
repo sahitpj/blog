@@ -1,35 +1,35 @@
 ---
 layout: default
 ---
-<div class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<h2 style="margin-bottom: -20px;">{{ page.title }}</h2>
+<p class="post-date">{{ page.date | date_to_string }}</p>
 
-  <header class="post-header">
-    <h1 itemprop="name" class="post-title">{{ page.title }}</h1>
-    <meta itemprop="keywords" content="{{ page.tags | join: ',' }}" />
-    <p class="post-meta">
-    {{ site.locales[site.default_locale].PostedInCategories }}
-    {% for cat in page.categories %}
-    <a href="{{site.baseurl}}/categories/#{{ cat }}">{{ cat }}</a>{% unless page.categories.last == cat %}, {% endunless %}
-    {% endfor %} 
-    {% if page.tags != empty %}
-    {{ site.locales[site.default_locale].Taggedwith }}
-    {% for tag in page.tags %}
-    <a href="{{ site.baseurl }}/tags/#{{ tag }}" title="{{ tag }}">{{ tag }}</a>{% unless page.tags.last == tag %}, {% endunless %}
-    {% endfor %}
-    {% endif %}
-    <time itemprop="datePublished" datetime="{{ page.date | date: '%Y-%m-%d' }}">
-    {{ site.locales[site.default_locale].PostDate }}{{ page.date | date: "%b %-d, %Y" }}
-    </time>
-    </p>
-  </header>
-
-  <article class="post-content" itemprop="articleBody">
-    {{ content }}
-  </article>
-  <hr />
+<div class="post">
+{{ content }}
 </div>
 
+<a class="twitter-share-button"
+   href="https://twitter.com/intent/tweet?text={{page.title}}"
+   data-hashtags="{{ page.tags | join: ', ' }}"
+   data-via="{{ site.owner.twitter_username }}"
+   data-size="large">Tweet</a>
+<script>window.twttr = (function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0],
+    t = window.twttr || {};
+  if (d.getElementById(id)) return t;
+  js = d.createElement(s);
+  js.id = id;
+  js.src = "https://platform.twitter.com/widgets.js";
+  fjs.parentNode.insertBefore(js, fjs);
 
-{% include page_pagination.html%}
-{% include comments.html %}
+  t._e = [];
+  t.ready = function(f) {
+    t._e.push(f);
+  };
 
+  return t;
+}(document, "script", "twitter-wjs"));</script>
+
+{% if site.disqus_shortname %}
+{% include disqus_comments.html %}
+{% endif %}
