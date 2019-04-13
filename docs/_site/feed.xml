@@ -1,405 +1,142 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.4">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-04-13T14:11:13+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">White Paper</title><subtitle>A simple jekyll theme aimed at programmers who like clean interface to write posts and show off some code.
-</subtitle><entry><title type="html">How To Get Readonly Mode In Django</title><link href="http://localhost:4000/articles/2017/02/23/How-to-get-readonly-mode-in-django.html" rel="alternate" type="text/html" title="How To Get Readonly Mode In Django" /><published>2017-02-23T00:00:00+05:30</published><updated>2017-02-23T00:00:00+05:30</updated><id>http://localhost:4000/articles/2017/02/23/How-to-get-readonly-mode-in-django</id><content type="html" xml:base="http://localhost:4000/articles/2017/02/23/How-to-get-readonly-mode-in-django.html">&lt;p&gt;Last week, I came across an interesting problem at work. The problem was to get read only users in a Django based application.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.4">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-04-13T16:14:21+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">The Bayesian Network</title><entry><title type="html">The Perfect Interview</title><link href="http://localhost:4000/post/2019/04/01/The-perfect-interview.html" rel="alternate" type="text/html" title="The Perfect Interview" /><published>2019-04-01T00:00:00+05:30</published><updated>2019-04-01T00:00:00+05:30</updated><id>http://localhost:4000/post/2019/04/01/The-perfect-interview</id><content type="html" xml:base="http://localhost:4000/post/2019/04/01/The-perfect-interview.html">&lt;p&gt;Let’s get real - Interviews are frustrating for a number of reasons: we get nervous because of the need to speak, the process is super tiring and may more, but perhaps the most frustrating thing about an interview (for me at least) is that there is a human being on the judging counter and that some how when it comes to human beings, there is always a doubt of whether things have been done in right way or not. But they do really make a difference?&lt;/p&gt;
 
-&lt;p&gt;But doing so was not very simple because there is no read only mode for users
-in Django. In order to solve this, I first started reading answers on stack
-overflow. Some of those links did pointed me to a correct route. Here, I will
-document the whole process so that it could help others and serve as a reminder
-for me as well.&lt;/p&gt;
+&lt;p&gt;Some things just are psychological to be taken care of, like the fact that coming in first or last in line for an interviews is more likely (through out this post I will be talking in terms of likelihood and probability and not assurance) to be remembered better by the interviewer, others such as the stories of interviewers fighting with their better half and hence showing their feelings on the interviewee or the interviewer having certain stereotypes such as people who can’t speak English well are not well qualified (in jobs where being fluent in English is not a necessity) or the fact that a particular interviewer asks the most absurd pf questions and then comes to a conclusion that you aren’t fit for the job, do get on our nerves and can be quite frustrating if encountered with. But they do really make a difference? Would it be justified to blame an interviewer for your loss? Probably a play with a few numbers can give a 10,000 feet few of the situation. (NOTE - the below study is just a play with random numbers, not at all accurate)&lt;/p&gt;
 
-&lt;p&gt;First of all, the whole system of authentication in any system originates from
-permissions. The basis permissions are. Read, Write, Execute. in Unix (chmod is
-used to set permissions).&lt;/p&gt;
-
-&lt;p&gt;Django has a cool way of adding the permissions in the meta class. Let’s say we
-have a model class named Cars.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Cars&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;models&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Charfield&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;year&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;models&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DateField&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Meta&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;permissions&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'readonly'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'Can Read Only Cars'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Just like this, Any permission could be added to the Model. Now in order to get
-these permissions in the database. You need to run migrate management command.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;python manage.py migrate&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;So this just sets the background in place. The real job is getting this
-permissions to work.&lt;/p&gt;
-
-&lt;p&gt;Now, I began to wonder what all things were required to develop this complete
-functionality ?&lt;/p&gt;
-
-&lt;p&gt;The first thing that came to my mind naturally was to override templates and
-hack ground admin.py.&lt;/p&gt;
-
-&lt;p&gt;So, I created a new class in Admin.py that was inherited from the admin class
-I was earlier using:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Cars&lt;/span&gt;
-
-
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;CarAdmin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;admin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ModelAdmin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;date_hierarchy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'date'&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;list_filter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'status'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'event_instance'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;actions&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'accept'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'reject'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'pending'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ReadonlyCarAdmin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CarAdmin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;admin_site&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-      &lt;span class=&quot;nb&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ReadonlyCarAdmin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;admin_site&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;has_delete_permission&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;obj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;has_perm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'car.readonly'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;is_superuser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;has_add_permission&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;obj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;has_perm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'car.readonly'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;is_superuser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;
-
-     &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;has_change_permission&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;obj&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;is_superuser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;readonly_fields&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# make sure to remove caching.
-&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;has_perm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'car.readonly'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;# make the fields readonly for only users with readonly permissions.
-&lt;/span&gt;            &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;readonly_fields&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;field&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;field&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;auto_created&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_meta&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;
-
-
-     &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get_actions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;actions&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ReadOnlyCarAdmin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_actions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;has_perm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'car.readonly'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;is_superuser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;# This ensures that that user doesn't not have any actions
-&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'delete_selected'&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;actions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;del&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;actions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'delete_selected'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;del&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;actions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'accept'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;del&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;actions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'reject'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;del&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;actions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'pending'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;actions&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;actions&lt;/span&gt;
-
-
-&lt;span class=&quot;n&quot;&gt;admin_site&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;register&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Car&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ReadonlyCarAdmin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Okay, so now we have a robust system in place to ensure whichever user has
-readonly permission on Cars Model would only be able to see the model data in
-Readonly mode.&lt;/p&gt;
-
-&lt;p&gt;But this is not it. Here is the part where templates are overridden.&lt;/p&gt;
-
-&lt;p&gt;First of all save and cancel button on buttom needs to go as we don’t need
-them.&lt;/p&gt;
-
-&lt;p&gt;For that, create a new template in templates folder.The templates name is ` change_form.html&lt;code class=&quot;highlighter-rouge&quot;&gt;.
-Hence the full pathname is &lt;/code&gt; carapp/templates/admin/change_form.html`.&lt;/p&gt;
-
-&lt;p&gt;Copy the content from the default django template (/admin/change_form.html) in django project
-add replace this content with this gist:&lt;/p&gt;
-
-&lt;script src=&quot;https://gist.github.com/vinitkumar/48a9cd0c2e35e033659c.js&quot;&gt;&lt;/script&gt;
-
-&lt;p&gt;This will ensure that the selected user with this readonly only permissions won’t be able
-get the submit button on his admin page.&lt;/p&gt;
-
-&lt;p&gt;Now, you have a fully functioning Django Admin with readonly mode. The main effort was to make it
-very easy to use and ensure that this feature could run across future versions.&lt;/p&gt;
-
-&lt;p&gt;Hope this post help anyone else who has to implement something similar.&lt;/p&gt;</content><author><name></name></author><category term="articles" /><category term="python" /><category term="django" /><category term="django-admin" /><summary type="html">Last week, I came across an interesting problem at work. The problem was to get read only users in a Django based application.</summary></entry><entry><title type="html">Using What You Already Have</title><link href="http://localhost:4000/2014/06/12/On-Using-What-You-Already-Have.html" rel="alternate" type="text/html" title="Using What You Already Have" /><published>2014-06-12T00:00:00+05:30</published><updated>2014-06-12T00:00:00+05:30</updated><id>http://localhost:4000/2014/06/12/On-Using-What-You-Already-Have</id><content type="html" xml:base="http://localhost:4000/2014/06/12/On-Using-What-You-Already-Have.html">&lt;p&gt;Sometimes we keep looking for resources everywhere only to realize that we had
-it with us the whole time. Situation like these might arise when you have too
-many choices. I too faced these moments before. It is a tough situation indeed.&lt;/p&gt;
-
-&lt;p&gt;I think one should develop art of learning before trying to learn a lot of
-things at once. Once you know how to learn and improve how to learn through
-constant iterations. It becomes easy thereafter.&lt;/p&gt;
-
-&lt;p&gt;I changed quite a lot as a developer and person. Last year. I was all about
-learning new technologies, getting super aware about all the frameworks that
-are popular. Now, I don’t even bother checking these. My goals are now mostly
-on low level decisions or high level architecture. All these frameworks and
-likes are just tooling. Nothing less nothing more. The main focus should be on
-problem solving. And problem solving at its heart is always
-Language/Platform/Frameworks agnostic.&lt;/p&gt;
-
-&lt;p&gt;Reading books and theory is also very important at this stage. Consider it as
-like sitting on the shoulder of giants. Of course practise is very important as
-well but making sure there is a good balance between these two really pays off.&lt;/p&gt;
-
-&lt;p&gt;I love reading books. I have bought quite some books in the past 11 months. I
-have so much to read and learn from these gems. I have done good progress in
-completing some of these. Hoping to cover more in the near future.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;__future__&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;absolute_import&lt;/span&gt;
-
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;os&lt;/span&gt;
-
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;celery&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Celery&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;django.conf&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;settings&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# noqa
-&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Celery&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'DumpGood'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;# Using a string here means the worker will not have to
-# pickle the object when using Windows.
-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config_from_object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'django.conf:settings'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;autodiscover_tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;settings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;INSTALLED_APPS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name></name></author><summary type="html">Sometimes we keep looking for resources everywhere only to realize that we had it with us the whole time. Situation like these might arise when you have too many choices. I too faced these moments before. It is a tough situation indeed.</summary></entry><entry><title type="html">The Pragmatic Programmer Checklist</title><link href="http://localhost:4000/2014/05/01/the-pragmatic-programmer-checklist.html" rel="alternate" type="text/html" title="The Pragmatic Programmer Checklist" /><published>2014-05-01T14:05:26+05:30</published><updated>2014-05-01T14:05:26+05:30</updated><id>http://localhost:4000/2014/05/01/the-pragmatic-programmer-checklist</id><content type="html" xml:base="http://localhost:4000/2014/05/01/the-pragmatic-programmer-checklist.html">&lt;p&gt;Last year, I read a great book on Programming and development (The Pragmatic Programmer).
-Here is a gist of checklist you must do in case you are developer. These are very good
-and for sure will help you evolve as a better developer.&lt;/p&gt;
-
-&lt;script src=&quot;https://gist.github.com/vinitkumar/55ef44f759b7e5620d59.js&quot;&gt;&lt;/script&gt;</content><author><name></name></author><summary type="html">Last year, I read a great book on Programming and development (The Pragmatic Programmer). Here is a gist of checklist you must do in case you are developer. These are very good and for sure will help you evolve as a better developer.</summary></entry><entry><title type="html">Simple State Machine Framework in c#</title><link href="http://localhost:4000/2014/02/26/simple-state-machine-framework-in-c-number.html" rel="alternate" type="text/html" title="Simple State Machine Framework in c#" /><published>2014-02-26T11:37:18+05:30</published><updated>2014-02-26T11:37:18+05:30</updated><id>http://localhost:4000/2014/02/26/simple-state-machine-framework-in-c-number</id><content type="html" xml:base="http://localhost:4000/2014/02/26/simple-state-machine-framework-in-c-number.html">&lt;p&gt;This blog post covers a very simple, light weight, yet flexible state machine framework in C# .Net.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/mubeenh/SSM&quot;&gt;Souce code on Github&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.nuget.org/packages/SSM/&quot;&gt;Download NuGet package&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;concept&quot;&gt;Concept&lt;/h2&gt;
-
-&lt;p&gt;&lt;strong&gt;State :&lt;/strong&gt; The state of a stateful entity. Represented by &lt;code&gt;IState&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Stateful entity :&lt;/strong&gt; An entity that has a defined state. Represented by &lt;code&gt;IStatefulEntity&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Context :&lt;/strong&gt; A context in which a state machine executes a transition. It is simply a set of configuration and data that governs the execution of a state machine. Represented by &lt;code&gt;IStateMachineContext&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Transition handler :&lt;/strong&gt; A component that handles a transition of a stateful entity between a source state to target state. Represented by &lt;code&gt;ITransitionHandler&lt;/code&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;usage&quot;&gt;Usage&lt;/h2&gt;
-
-&lt;p&gt;Start by creating an entity that represents a state.&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ServiceTicketState&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IState&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Code&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// ...&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Now, create a stateful entity by implementing &lt;code&gt;IStatefulEntity&lt;/code&gt; interface. For exmaple:&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ServiceTicket&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IStatefulEntity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;State&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// ...&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Next comes transition handlers. A transition hadler is created by implementing &lt;code&gt;ITransitionHandler&lt;/code&gt; interface. Below is an example of a generic transition handler that can be used to abstract common functionalities in our Service Ticket example.&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;GenericTransitionHandler&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ITransitionHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;virtual&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TransitionKey&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;virtual&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Execute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nextState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argumentsMap&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;entity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;State&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nextState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;virtual&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ValidateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nextState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argumentsMap&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;virtual&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BeforeTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argumentsMap&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;virtual&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AfterTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argumentsMap&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Next and final step is to create a ‘context’ by implementing &lt;code&gt;IStateMachineContext&lt;/code&gt; interface. This interface declares following methods that need to be implemented to create a context.&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;ICollection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetTransitions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;IDictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ITransitionHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetTransitionHandlersMap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;ICollection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AllStates&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Implementation approach is left to the user. It could from just hard coding for simple cases to database backed storage and retrieval for more advanced cases.&lt;/p&gt;
-
-&lt;p&gt;Here is an example implementation (hard coded for simplicity)&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICollection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetTransitions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;ICollection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;();&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;// Define all possible transitions, and its source and target states&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;StateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;?&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Transition_New&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;New&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// ? means null or undefined state&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;StateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;New&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Transition_Open&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Open&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;StateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Open&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Transition_Close&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Closed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;StateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Closed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Transition_ReOpen&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Open&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;StateTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;?&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Transition_Cancel&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Cancelled&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IDictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ITransitionHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetTransitionHandlersMap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;IDictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ITransitionHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ITransitionHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&amp;gt;();&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;// create a map of all available transitions and their respective transition handlers&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Transition_New&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;NewTransitionHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Transition_Open&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;OpenTransitionHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Transition_Close&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CloseTransitionHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Transition_ReOpen&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;OpenTransitionHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICollection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AllStates&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;states&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;();&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;// create a list of all possible states&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;states&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Code&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;New&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;New Ticket&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;states&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Code&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Open&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Ticket Open&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;states&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Code&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Closed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Ticket Closed&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;states&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Code&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Cancelled&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Ticket Cancelled&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;states&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Now &lt;code&gt;ServiceTicket&lt;/code&gt; entity can be transitioned through state machine. Create an instance of &lt;code&gt;StateMachine&lt;/code&gt; as follows.&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;            &lt;span class=&quot;n&quot;&gt;IStateMachineContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ExampleStateMachineContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;StateMachine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;StateMachine&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;StateMachine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ServiceTicketState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And request a transition as shown below.&lt;/p&gt;
-
-&lt;div class=&quot;language-csharp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;            &lt;span class=&quot;n&quot;&gt;ServiceTicket&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serviceTicket&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ServiceTicket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-            &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-                 &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;An example service ticket&quot;&lt;/span&gt;
-            &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-            &lt;span class=&quot;n&quot;&gt;StateMachine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;RequestTransition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serviceTicket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Transition_New&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And thats it. Your state machine is ready to handle transitions on the Service Ticket example entity.&lt;/p&gt;</content><author><name></name></author><summary type="html">This blog post covers a very simple, light weight, yet flexible state machine framework in C# .Net.</summary></entry><entry><title type="html">How To Use Facebook Page Albums As Image Source in Django</title><link href="http://localhost:4000/2014/02/14/how-to-use-facebook-page-albums-as-image-source-in-django.html" rel="alternate" type="text/html" title="How To Use Facebook Page Albums As Image Source in Django" /><published>2014-02-14T20:39:36+05:30</published><updated>2014-02-14T20:39:36+05:30</updated><id>http://localhost:4000/2014/02/14/how-to-use-facebook-page-albums-as-image-source-in-django</id><content type="html" xml:base="http://localhost:4000/2014/02/14/how-to-use-facebook-page-albums-as-image-source-in-django.html">&lt;p&gt;Lot of companies use Facebook for marketing their products. Facebook is mainly built around images. In fact the whole ecosystem is fueled by images. In order to scale for the vast user base of Facebook, they have done a really good job.&lt;/p&gt;
-
-&lt;p&gt;So what if you don’t want to use your own storage for uploading images and want to use Facebook for Images? It would be so cool, right?
-There are two benefits:&lt;/p&gt;
+&lt;p&gt;Assume you rarely meet such people however they have a huge influence.&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;You don’t have to spend anytime setting up an app or service to deal with images. Believe me it is a real tough problem to solve given the size and count of images. You can’t put a bar on either of these two.&lt;/li&gt;
-  &lt;li&gt;It gives your users a much user friendly way. They upload images just once on Facebook and it auto-magically appears on your website. Facebook almost never gets down so there is very good chance you will get a 99.9% uptime.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that the an interviewer who is in a bad mood contributes towards not registering you as a worthy candidate - 0.5&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that the an interviewer who has a bias contributes towards not registering you as a worthy candidate - 0.5&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that you contribute towards a negative bias which the interviewer has - 0.1&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that you meet an interviewer who is in mood (a)  only - 0.1&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that you meet an interviewer who has a bias (b) only - 0.1&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that you meet someone with both - 0.05&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that you will clear the interviewer without external factors - 0.7&lt;/p&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;So, In order to fix this problem last year I created a Ajax based plugins to fetch images from Facebook album. It asked user to enter album URL and name. But there was an issue with this approach. In order to get access to Facebook graph database it has to get access tokens and each access token only last two months. Plus, it collapsed when it faced IE, since there is unsolvable CORS issue with IE &amp;lt; 9 (our 50% client base for that project).&lt;/p&gt;
+&lt;p&gt;probability of clearing  (1 - (0.1 x 0.5 + 0.1 x 0.5 x 0.1 + 0.05 x 0.5 x 0.1 + 0.05 x 0.5) ) ~ 9% reduction&lt;/p&gt;
 
-&lt;p&gt;It was a tough problem to solve. But i finally found some good articles and projects on Internet. One such project was django-fbgallery. It used a really neat approach to get the Facebook images server side and renders it the page purely server side. It not only solved the IE issue, but also the quality and speed of image loading became instant.&lt;/p&gt;
-
-&lt;p&gt;But there was an issue with this app, it used URLS to render the albums and spoiled the pretty URLS that you would like for pages in Django. So I took the core part of the app ( the Facebook interaction part) and made a sweet CMS plugin out of it.&lt;/p&gt;
-
-&lt;p&gt;Here is the code to make it all work:&lt;/p&gt;
-
-&lt;p&gt;```python Facebook.py 
-from django.conf import settings
-from django.core.cache import cache
-import urllib2, urllib
-import django.utils.simplejson as json
-from django.template import defaultfilters&lt;/p&gt;
-
-&lt;p&gt;fql_url = ‘https://api.Facebook.com/method/fql.query’
-cache_expires = getattr(settings, ‘CACHE_EXPIRES’, 30)&lt;/p&gt;
-
-&lt;p&gt;def get_fql_result(fql):
-    cachename = ‘fbgallery_cache_’ + defaultfilters.slugify(fql)
-    data = None
-    if cache_expires &amp;gt; 0:
-        data = cache.get(cachename)
-    if data == None: 
-        options = {
-            ‘query’:fql,
-            ‘format’:’json’,
-        }
-        f = urllib2.urlopen(urllib2.Request(fql_url, urllib.urlencode(options)))
-        response = f.read()
-        f.close()&lt;br /&gt;
-        data = json.loads(response)
-        if cache_expires &amp;gt; 0:
-            cache.set(cachename, data, cache_expires*60)
-    return data&lt;/p&gt;
-
-&lt;p&gt;def display_album(album_id):
-    “&quot;”Display a Facebook album&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;First check that the album id belongs to the page id specified
-&quot;&quot;&quot;
-fb_id = settings.FB_PAGE_ID
-fql = &quot;select aid, name from album where owner=%s and aid='%s'&quot; % (fb_id, album_id)
-valid_album = get_fql_result(fql)
-if valid_album:
-    fql = &quot;select pid, src, src_small, src_big, caption from photo where aid = '%s'  order by created desc&quot; % album_id
-    album = get_fql_result(fql)
-    #album_detail = [item for item in valid_album]       
-    return album ```
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;I asked user to enter the album ID and name, then rendered the album using the plugin here:&lt;/p&gt;
-
-&lt;p&gt;```python cms_plugins.py 
-from cms.plugin_base import CMSPluginBase
-from cms.plugin_pool import plugin_pool
-from django.utils.translation import ugettext_lazy as _
-from Facebook import display_album&lt;/p&gt;
-
-&lt;p&gt;from models import FacebookGallery&lt;/p&gt;
-
-&lt;p&gt;class FacebookGalleryPlugin(CMSPluginBase):
-    model = FacebookGallery
-    name = _(“Facebook Album Gallery”)
-    render_template = “cmsplugin_fbgallery/album.html”&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def render(self, context, instance, placeholder):
-    album = display_album(instance.album_id)
-    context.update({
-      'object': instance,
-      'album': album,
-      })
-    return context
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;plugin_pool.register_plugin(FacebookGalleryPlugin)
-```&lt;/p&gt;
-
-&lt;p&gt;You could choose whatever template you want. It’s entirely upto you.&lt;/p&gt;
-
-&lt;p&gt;Here is the image of this plugin live in action:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://imgur.com/dmrxcXh&quot;&gt;&lt;img src=&quot;http://i.imgur.com/dmrxcXh.png&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;The plugin is open sourced here: &lt;a href=&quot;https://github.com/changer/cmsplugin-fbgallery&quot;&gt;cmsplugin-fbgallery&lt;/a&gt; . Feel free to contribute and ask questions.&lt;/p&gt;</content><author><name></name></author><summary type="html">Lot of companies use Facebook for marketing their products. Facebook is mainly built around images. In fact the whole ecosystem is fueled by images. In order to scale for the vast user base of Facebook, they have done a really good job.</summary></entry><entry><title type="html">Migrating To Octopress</title><link href="http://localhost:4000/2014/02/13/migrating-to-octopress.html" rel="alternate" type="text/html" title="Migrating To Octopress" /><published>2014-02-13T23:07:02+05:30</published><updated>2014-02-13T23:07:02+05:30</updated><id>http://localhost:4000/2014/02/13/migrating-to-octopress</id><content type="html" xml:base="http://localhost:4000/2014/02/13/migrating-to-octopress.html">&lt;p&gt;Finally after much ado, I am moving Gotchacode to Octopress. There are various reasons for doing it.
-I am listing some of them here:&lt;/p&gt;
+&lt;p&gt;Assuming you meet such people more often but have less influence&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;There is absolutely no good theme if you are running a technical blog.&lt;/li&gt;
-  &lt;li&gt;Syntax highlighting is pathetic.&lt;/li&gt;
-  &lt;li&gt;I can’t write post in my text editor.&lt;/li&gt;
-  &lt;li&gt;There is no source control.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that the an interviewer who is in a bad mood contributes towards not registering you as a worthy candidate - 0.1&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that the an interviewer who has a bias contributes towards not registering you as a worthy candidate - 0.1&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that you contribute towards a negative bias which the interviewer has - 0.1&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that you meet an interviewer who is in mood (a)  only - 0.3&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that you meet an interviewer who has a bias (b) only - 0.3&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probability that you meet someone with both - 0.2&lt;/p&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;But I will miss blogspot too. The integrated analytics was best in class and so was the SEO.&lt;/p&gt;</content><author><name></name></author><summary type="html">Finally after much ado, I am moving Gotchacode to Octopress. There are various reasons for doing it. I am listing some of them here:</summary></entry><entry><title type="html">Music, Movies and Life</title><link href="http://localhost:4000/2014/01/music-movies-and-life.html" rel="alternate" type="text/html" title="Music, Movies and Life" /><published>2014-01-12T08:29:00+05:30</published><updated>2014-01-12T08:29:00+05:30</updated><id>http://localhost:4000/2014/01/music-movies-and-life</id><content type="html" xml:base="http://localhost:4000/2014/01/music-movies-and-life.html">&lt;div class=&quot;css-full-post-content js-full-post-content&quot;&gt;
-&lt;div dir=&quot;ltr&quot; style=&quot;text-align: left;&quot; trbidi=&quot;on&quot;&gt;I love watching Movies and I love Music. They are almost inseperable part of life. I love the way they could touch and move your life more than you could imagine. I remember watching &quot;The Social Network&quot; almost 50 times in college. It served as a push to write more code and do awesome in life.&lt;div&gt;&lt;br /&gt;&lt;/div&gt;&lt;div&gt;Well, it might sound really strange but for last 10 years or so. I just let life flow in the natural way. I failed quite sometimes, achieved success as well. Made some long lasting friends, lost some people I felt who were my friends.&lt;/div&gt;&lt;div&gt;&lt;br /&gt;&lt;/div&gt;&lt;div&gt;The great thing is that in all these experiences, I realised that what is the true purpose of my life. They say, there are just two important days in your life.&lt;/div&gt;&lt;div&gt;&lt;br /&gt;&lt;/div&gt;&lt;blockquote class=&quot;tr_bq&quot;&gt;The day when you are born, and the day you find out why?&lt;/blockquote&gt;I think I just found out the purpose of my life. It's not something I would want to disclose and claim I am going to achieve. It is the way my thinking changed and the choice of life I am going to make.&lt;br /&gt;&lt;br /&gt;Also, I would love to thank the wonderful readers of this blog - which initially started casually just to empty my mind on topics I felt were relevant at that time. For sure there are some not so good posts as well. But again, this blog is just me writing what comes in my mind. And if some of those helps someone or guide someone. Why not?&lt;br /&gt;&lt;br /&gt;&lt;/div&gt;
-&lt;/div&gt;</content><author><name>Vinit Kumar</name></author><summary type="html">I love watching Movies and I love Music. They are almost inseperable part of life. I love the way they could touch and move your life more than you could imagine. I remember watching &quot;The Social Network&quot; almost 50 times in college. It served as a push to write more code and do awesome in life.Well, it might sound really strange but for last 10 years or so. I just let life flow in the natural way. I failed quite sometimes, achieved success as well. Made some long lasting friends, lost some people I felt who were my friends.The great thing is that in all these experiences, I realised that what is the true purpose of my life. They say, there are just two important days in your life.The day when you are born, and the day you find out why?I think I just found out the purpose of my life. It's not something I would want to disclose and claim I am going to achieve. It is the way my thinking changed and the choice of life I am going to make.Also, I would love to thank the wonderful readers of this blog - which initially started casually just to empty my mind on topics I felt were relevant at that time. For sure there are some not so good posts as well. But again, this blog is just me writing what comes in my mind. And if some of those helps someone or guide someone. Why not?</summary></entry><entry><title type="html">Happy New Year 2014</title><link href="http://localhost:4000/2014/01/happy-new-year-2014.html" rel="alternate" type="text/html" title="Happy New Year 2014" /><published>2014-01-01T13:22:00+05:30</published><updated>2014-01-01T13:22:00+05:30</updated><id>http://localhost:4000/2014/01/happy-new-year-2014</id><content type="html" xml:base="http://localhost:4000/2014/01/happy-new-year-2014.html">&lt;div class=&quot;css-full-post-content js-full-post-content&quot;&gt;
-&lt;div dir=&quot;ltr&quot; style=&quot;text-align: left;&quot; trbidi=&quot;on&quot;&gt;A very happy new year to all the readers of this blog. To start with, I would try to publish a post at least once a week so that it may satisfy your appetite on a regular basis. Also, I am meditating about something new on this blog. It will be revealed when the time comes. With that said, have an amazing start to the year.&lt;/div&gt;
-&lt;/div&gt;</content><author><name>Vinit Kumar</name></author><summary type="html">A very happy new year to all the readers of this blog. To start with, I would try to publish a post at least once a week so that it may satisfy your appetite on a regular basis. Also, I am meditating about something new on this blog. It will be revealed when the time comes. With that said, have an amazing start to the year.</summary></entry></feed>
+&lt;p&gt;probability that you will clear it  (1 - (0.3 x 0.1 + 0.3 x 0.1 x 0.1 + 0.2 x 0.1  + 0.2 x 0.1 x 0.1) ) ~ 6% reduction&lt;/p&gt;
+
+&lt;p&gt;Assuming absolute bad luck where interviewers with a bad mood are high in number and influential&lt;/p&gt;
+
+&lt;p&gt;probability that you will clear it  (1 - (0.3 x 0.5 + 0.3 x 0.5 x 0.1 + 0.2 x 0.5  + 0.2 x 0.5 x 0.1) ) ~ 28% reduction&lt;/p&gt;
+
+&lt;p&gt;perhaps according to the following if you were to unluckily to have a bias which an interviewer carries then your chances would drop another ~ 4-7%&lt;/p&gt;
+
+&lt;p&gt;A descent average for the following could be about ~ 12%. So would a 12% according to our over the top study seem like a good number to feel worried about? Well I guess that has to do with the situation itself. A person with about 58% would still have more than 50% chances of clearing the interview. Assuming a Gaussian distribution of marks, the ones most affected would be ones just above average, however if you were to consider a low acceptance rate of interviews, you were probably not going to be selected in the first place.&lt;/p&gt;
+
+&lt;p&gt;So to answer our question - does the interviewer play a big role in you not clearing your interview? Yes only if you were among the highly intelligent, you got the worst of the interviewers and you couldn’t impress them with your intelligence while your other highly intelligent competitors got away with good interviewers, otherwise nope, not really. How likely is this to happen? probably never cause if your intelligence doesn’t impress, then you probably do have a history with the interviewer.&lt;/p&gt;</content><author><name></name></author><category term="post" /><summary type="html">Let’s get real - Interviews are frustrating for a number of reasons: we get nervous because of the need to speak, the process is super tiring and may more, but perhaps the most frustrating thing about an interview (for me at least) is that there is a human being on the judging counter and that some how when it comes to human beings, there is always a doubt of whether things have been done in right way or not. But they do really make a difference?</summary></entry><entry><title type="html">Music, Movies and Writing</title><link href="http://localhost:4000/excerpt/2019/01/12/music-movies-and-life.html" rel="alternate" type="text/html" title="Music, Movies and Writing" /><published>2019-01-12T00:00:00+05:30</published><updated>2019-01-12T00:00:00+05:30</updated><id>http://localhost:4000/excerpt/2019/01/12/music-movies-and-life</id><content type="html" xml:base="http://localhost:4000/excerpt/2019/01/12/music-movies-and-life.html">&lt;div class=&quot;css-full-post-content js-full-post-content full-post&quot;&gt;
+    &lt;div dir=&quot;ltr&quot; style=&quot;text-align: left;&quot; trbidi=&quot;on&quot;&gt;
+        &lt;div&gt;
+            Music, Movies and well Writing have always been an integral part to me, firstly having been introduced to music 
+            when i started learning the guitar in 8th grade, then writing during my 10th grade when after reading the entire &quot;Percy Jackson&quot; series, 
+            I felt heavily inspired to write and movies, which was my favourite pass time after coming from college during my 11th and 12th grade
+        &lt;/div&gt;
+        &lt;div&gt;
+            &lt;br /&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+            Although over the years through college, I have had less time to enjoy them fully (for which I blame myself), I am 
+            however going to make it a point to do spend a certain amount of time on the following three. Writing - by writing regulalrly through
+            my blog, reading by giving regular updates about books I am reading or have read and music probably by just doing it
+        &lt;/div&gt;
+            &lt;br /&gt;
+        &lt;div&gt;
+            I am always open to suggestions! Do feek free to reach me through my social media accounts or simply drop me an email. Would be delighted
+            to try new stuff out!
+        &lt;/div&gt;
+        &lt;div&gt;
+            &lt;br /&gt;
+        &lt;/div&gt;
+        &lt;!-- &lt;blockquote class=&quot;tr_bq&quot;&gt;The day when you are born, and the day you find out why?&lt;/blockquote&gt; --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</content><author><name></name></author><category term="excerpt" /><summary type="html">Music, Movies and well Writing have always been an integral part to me, firstly having been introduced to music when i started learning the guitar in 8th grade, then writing during my 10th grade when after reading the entire &quot;Percy Jackson&quot; series, I felt heavily inspired to write and movies, which was my favourite pass time after coming from college during my 11th and 12th grade Although over the years through college, I have had less time to enjoy them fully (for which I blame myself), I am however going to make it a point to do spend a certain amount of time on the following three. Writing - by writing regulalrly through my blog, reading by giving regular updates about books I am reading or have read and music probably by just doing it I am always open to suggestions! Do feek free to reach me through my social media accounts or simply drop me an email. Would be delighted to try new stuff out!</summary></entry><entry><title type="html">Can we change our Fate?</title><link href="http://localhost:4000/post/2018/07/28/Can-we-change-our-Fate.html" rel="alternate" type="text/html" title="Can we change our Fate?" /><published>2018-07-28T00:00:00+05:30</published><updated>2018-07-28T00:00:00+05:30</updated><id>http://localhost:4000/post/2018/07/28/Can-we-change-our-Fate</id><content type="html" xml:base="http://localhost:4000/post/2018/07/28/Can-we-change-our-Fate.html">&lt;p&gt;Fate is something we use almost regularly, usually in the context of when we can’t predict the outcome of an action, we as humans push it towards fate, which begs the question - can we change our fate?&lt;/p&gt;
+
+&lt;p&gt;During the ancient times, in European and classical mythology, fate was defined as the events which were ordered unavoidable. This is a concept based on the belief that there is a fixed order to the universe, and of course this was controlled by different gods, for their respective religions. During the nineteenth century a more general and philosophical definition came about. Arthur Schopenhauer [1], a famous German philosopher who is
+famous for his work on metaphysical will, described fate as a manifestation of free will, and that it could be overwritten through the power of morality and Asceticism.&lt;/p&gt;
+
+&lt;p&gt;Often there have been times where fate has been misunderstood to be similar another term determinism. Determinism means the power to determine the effect of an action on a substance. It is more of a physical cause and effect relation. Fate on the other hand is something that is spiritually set, and fixed from the time of your birth irrespective of your actions, or is it really so?
+A better question to ask is whether we have the power to change our fate or is it already predefined? Although it may not seem obvious, the implications of proving whether we can change our faith or that it something that is fixed for a life, are huge. Proving fate doesn’t exist seems to be the easier part to the question because logically if it were to exist, all of us
+would be sitting back and let fate do the work for us, but then you could counter argue that your fate is that you would be sitting and doing nothing, because you thought fate would do all the work for us. This simply becomes a recursive problem, and we won’t be making any head way of proving either that it exists or that it doesn’t.&lt;/p&gt;
+
+&lt;p&gt;Aristotle in his book De Intrepretatione talks about fatalism and says that if something is proved to be necessary on its own will definitely happen [2]. However, proving that a statement is necessary on its own we cannot do so unless the statement has occurred, because otherwise the statement would only have the potential to do so and not truly be it.
+This seems conclusive proof that fate doesn’t exist, but other philosophers have taken his findings and have proved otherwise. Surprisingly philosophy hasn’t been the only the subject to give an insight into this subject.
+When Isaac Newton came up with his Classical mechanic’s theory, where his first law stated that for every effect there is a cause to it. It came to explain that even events such as the roll of a dice, can be predicted given the right amount of data, such as the amount of force
+given, its direction, the opposing force and it direction, etc. Leaving out its practicality, it seemed like a genuine reason to conclude so [3]. Newton also being a famous philosopher carried his physical principles to the actions and thoughts and said that every effect is combination of multiple factors, and considered the human brain as an independent entity making its own decisions.&lt;/p&gt;
+
+&lt;p&gt;However, in the late 1930’s as the theory of Quantum Mechanics grew, Schrodinger, a then physicist came up with this notion which was later called as Schrodinger’s Cat. The notion goes about like this — Suppose we have a box whose contents cannot be seen, and we place a cat along with a small amount of radioactive material. If this substance decays then through an internal mechanism we would release cyanide into the chamber, and the cat
+would die, however if it didn’t then the cat would be alive. If this setup were to be left for an hour and so, we can come up with two outcomes — that either the cat is alive or that is dead. The only way we can figure that out is by opening the box and looking for ourselves and until then the cat would appear to exist in a super positional state of life and death [4]. Theoretically it makes sense but now let us take n humans A1, A2 … An. To be able to tell which state each person each person is in, someone must be looking them at each and every moment otherwise if no one is looking he will exist in a super positional state of infinite states. But we know that in real life we don’t exist in such a situation. We are always in one state or to be specific one quantum state, and this applies to all humans simultaneously. If this were to be possible, all humans must be looking at each other at the same time, or we must all form a cycle where in one looks at the other and that person looks at someone else and so on, or something already exists that is looking at all of us at the same time. Since the first two are impossible, hence by theory someone has already determined our quantum state for this moment and the next one and the next one and so on. Leaving the fact that it seems that some entity is actually looking at us, it tells us that this entity has already set our quantum state to a particular value well in advance. Although from this theory we can come closer to proving that fate exists, and with the additional tests that atoms have succeeded in maintaining atoms in a multi-quantum state, it still doesn’t falsify the classical mechanics notion. The only way that can be done is by proving or not that are actions are pre-determined.&lt;/p&gt;
+
+&lt;p&gt;Coming back to Aristotle and his findings, Richard Taylor during the 1960s came up with an interesting argument [5]. Let’s take two statements Q — India wins the match Q&lt;code class=&quot;highlighter-rouge&quot;&gt; — India loses the match and A — we read about India winning in the newspaper and A&lt;/code&gt; its negation. Now if Q occurs then we don’t have the power to do A&lt;code class=&quot;highlighter-rouge&quot;&gt; and similarly the vice versa. But now since Q and Q&lt;/code&gt; both have equal potential and both aren’t necessary on its own, we conclusively don’t have power over A and A’. it seems logical enough. Now take Q — ordering war Q’ — not ordering war, A — going for war, A` — not going for war. Now let’s replace these statements. It should be logically correct, and hence if we continue this process it seems that we have no power over anything. But then again both of the statements Q and Q’ aren’t necessary on their own and only have the potential to, hence A and A’ only have the potential to, hence saving it from proving that fate exists. But if a statement can never be necessary on its own in the present then when can it be. Though we can say it’s true in the past it doesn’t give us an insight about the future. Ironically Richard also says, “No agent can perform any given act if there is lacking, at the same time or any other time, some condition necessary for the occurrence of that act” [6], which suggests our actions change based on the conditions prevalent then. But then It goes back to say whether those conditions were fated.&lt;/p&gt;
+
+&lt;p&gt;Overall as a whole it seems that fate is too complex to understand but unless someone doe truly understand it or is fated to, we should really put our best foot forward&lt;/p&gt;
+
+&lt;p&gt;[1] — https://en.wikipedia.org/wiki/Destiny &lt;br /&gt;
+[2] — http://classicalwisdom.com/aristotles-de-interpretatione-fate-free-will/ &lt;br /&gt;
+[3] https://www.youtube.com/watch?v=cA5KC1zz6uY&amp;amp;index=2&amp;amp;list=LLLSWUqGfk1iTPjUCx-
+G9Iqg &lt;br /&gt;
+[4] — https://en.wikipedia.org/wiki/Schr%C3%B6dinger%27s_cat &lt;br /&gt;
+[5] — https://plato.stanford.edu/entries/fatalism/ &lt;br /&gt;
+[6] — https://plato.stanford.edu/entries/fatalism/ &lt;br /&gt;&lt;/p&gt;</content><author><name></name></author><category term="post" /><summary type="html">Fate is something we use almost regularly, usually in the context of when we can’t predict the outcome of an action, we as humans push it towards fate, which begs the question - can we change our fate?</summary></entry><entry><title type="html">What it means to be a Big Data Analyst</title><link href="http://localhost:4000/post/2018/07/04/What-it-means-to-be-a-Big-Data-Analyst.html" rel="alternate" type="text/html" title="What it means to be a Big Data Analyst" /><published>2018-07-04T00:00:00+05:30</published><updated>2018-07-04T00:00:00+05:30</updated><id>http://localhost:4000/post/2018/07/04/What-it-means-to-be-a-Big-Data-Analyst</id><content type="html" xml:base="http://localhost:4000/post/2018/07/04/What-it-means-to-be-a-Big-Data-Analyst.html">&lt;p&gt;During the past two years of college, I have had a lot of friends who would come up to me and tell how they were learning Big Data Analytics and how they wished to pursue that in the future as well. At first, the word seemed fancy and adding to that people would sometimes refer it to as Data Science which would sometimes make it seem like its a whole new branch of computer science. But over time I have had the chance to know more about it and eventually had the opportunity to work as a Data Scientist myself, and trust me, it is nothing as I thought it was compared to when I first heard it. So for all those people who are wondering Big Data is and what exactly it means to be a Big Data Analyst, here is my understanding of it, But first, let’s answer another more genuine question some of us might have, what does Big Data actually mean?&lt;/p&gt;
+
+&lt;p&gt;Big Data refers to the large amount of data, we are capable of extracting from any raw form of data. To be precise this sudden boom in the amount of data we were generating is called the Big Data Age.&lt;/p&gt;
+
+&lt;p&gt;To understand this lets take the example of some object X ( remember X is an object type , like a class ). X has two components as an object — 1. attributes 2. characteristics. A characteristic can be defined as its behavioural aspect more like the effect and the attribute like a quality, more like the cause. Hence attributes cause an X object’s characteristics.&lt;/p&gt;
+
+&lt;p&gt;Since X as an object is long known, extracting data about all its characteristics is possible, however X as a object would give the user, information about its attributes 1,2,3 ( let’s suppose ). X simply with it’s attributes — 1,2,3 is said to be in it’s raw form. Now before the Big Data Age, we could only assign and extract attributes 1,2,3 from X. But now we can assign and extract 1,2,3 along with an additional 4,5,6,7,8 and derivatives of all these 8 attributes, which leads to secondary attributes and so on.&lt;/p&gt;
+
+&lt;p&gt;Note: Throughout the post the word ‘extracting’ doesn’t mean the literal extraction, it simply means that we can find it’s values.&lt;/p&gt;
+
+&lt;p&gt;Now the job of a Data Analyst — the primary goal of a Big Data Analyst is to get some useful information from these raw objects X ie, understanding the relation between the characteristics ( effect ) and the attributes ( cause ). It’s pretty obvious all X objects aren’t the same and since we wish to study X as an object, it is important that we try to understand all it’s variants. So here come our three big tasks&lt;/p&gt;
+
+&lt;p&gt;Gathering data — Finding all variants of X — A very important step, because sources may not always be straightforward, and extracting these raw forms may not be easy too and can sometimes be painfully time-consuming.&lt;/p&gt;
+
+&lt;p&gt;Cleaning it and organising it — extracting all the characteristics, attributes and generating additional secondary attributes from the various X objects we have gathered. Then we must organise this information so that it is easily readable.&lt;/p&gt;
+
+&lt;p&gt;Getting some useful inferences from it — And here is the final task, finding the relation between the characteristics and attributes.&lt;/p&gt;
+
+&lt;p&gt;A lot can be done with the data we have collected, such as studying data trends over time, making statistical models/visualisation to try and understand these X objects in detail and maybe finally making predictive models about these X objects and there attributes/characteristics.&lt;/p&gt;
+
+&lt;p&gt;But although we focus a lot on trying to understand different statistical models in order to apply them, we often forget that the quality of the data we have gathered plays a direct role in how our models will be, thus it becomes important to research and understand what data we are pulling and how it may be useful. Another key factor that matters is the amount of data because although we do call it Big Data, it doesn’t always mean we have to collect a large number of attributes in order to make our models — A small set yet smart set would be, of course way better than a large number of less reliable features.&lt;/p&gt;
+
+&lt;p&gt;But overall, being a Data Analyst simply boils down to these 3 steps and how fast and effiiently this can be done is simply yet another coding skill one must learn and develop overtime. I hope this gives a good idea to young minds as to what it means to be a Big Data Analyst.&lt;/p&gt;
+
+&lt;p&gt;cheers !&lt;/p&gt;</content><author><name></name></author><category term="post" /><summary type="html">During the past two years of college, I have had a lot of friends who would come up to me and tell how they were learning Big Data Analytics and how they wished to pursue that in the future as well. At first, the word seemed fancy and adding to that people would sometimes refer it to as Data Science which would sometimes make it seem like its a whole new branch of computer science. But over time I have had the chance to know more about it and eventually had the opportunity to work as a Data Scientist myself, and trust me, it is nothing as I thought it was compared to when I first heard it. So for all those people who are wondering Big Data is and what exactly it means to be a Big Data Analyst, here is my understanding of it, But first, let’s answer another more genuine question some of us might have, what does Big Data actually mean?</summary></entry></feed>

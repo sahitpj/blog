@@ -6,8 +6,12 @@ title: A guide to your digital life
     {% for post in paginator.posts %}
     <div class="post other link">
       <h2></span> <a href="{{site.url}}{{post.url}}">{{ post.title }}</a></h2>
-      <p class="post-date">{{ post.date | date_to_string }}</p>
+      <p class="post-date">{{ post.date | date_to_string }} <span class="badge badge-light" style="font-size: 14px">{{ post.category }}</span></p>
+      {% if post.category == "post" %}
+      <p style="font-size: 18px;font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif">{{ post.content | strip_html | truncatewords: 50 }}</>
+      {% else %}
       {{ post.excerpt }}
+      {% endif %}
     </div>
     {% endfor %}
 </div>
